@@ -16,4 +16,14 @@ def get_teachers(cur):
 
     cur.execute(sql_str)
     res = cur.fetchall()
-    return res
+    formatted_response = sorted(
+        [
+            {
+                "id": teacher[0],
+                "name": teacher[1],
+            }
+            for teacher in res
+        ],
+        key=lambda x: x["id"],
+    )
+    return formatted_response
