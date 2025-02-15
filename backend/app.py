@@ -2,11 +2,14 @@ import os
 import atexit
 from typing import Any, Literal, LiteralString
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 from init_tables import init_tables
 from neon_connect import create_connection_pool
 from students_services import *
 
 app = Flask(__name__)
+
+CORS(app)
 
 # Initialize connection pool and connect with neon db
 connection_pool = create_connection_pool()
