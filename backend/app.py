@@ -6,6 +6,7 @@ from flask_cors import CORS
 from init_tables import init_tables
 from neon_connect import create_connection_pool
 from students_services import *
+from teachers_service import get_teachers
 
 app = Flask(__name__)
 
@@ -84,6 +85,22 @@ def get_all_student_grades() -> tuple[Any, Literal[200]] | tuple[Any, Literal[40
     finally:
         if conn:
             connection_pool.putconn(conn)
+
+@app.route("/teachers", methods=["GET"])
+def get_all_teachers():
+    conn = None
+    try:
+        conn = connection_pool.getconn()
+        cur = conn.cursor()
+        res = get_teachers(cur)
+        return jsonify(res), 200
+    except Exception as e:
+        print(f"Database error: {e}")
+        return jsonify({"error": "Unable to fetch teachers details."}), 400
+    finally:
+        if conn:
+            connection_pool.putconn(conn)
+
 
 def on_app_close() -> None:
     global connection_pool
