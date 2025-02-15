@@ -8,15 +8,14 @@ export default function Table() {
   const [studentsData, setStudentsData] = useState([]);
   const [teachersData, setTeachersData] = useState([]);
   const [newTeacher, setNewTeacher] = useState(false);
+  const [semesterRange, setSemesterRange] = useState([1, 8]);
   const [checkboxSelection, setCheckBoxSelection] = useState(undefined);
   const baseUrl = "https://elliotphuagovtechtmotht-production.up.railway.app/";
   const getStudentsUrl = baseUrl + "students";
   const getTeachersUrl = baseUrl + "teachers";
   const updateTeacherUrl = baseUrl + `student/${checkboxSelection}`;
-  // add checkboxes to allow one selection -> and dropdown to select teacher and button to submit update
-  // add draggable range for start and end semester
-  // error handling
-  // readme -> assumptions
+  const getRangedGradesUrl = baseUrl + `students-grades?earliest_semester=${semesterRange[0]}&latest_semester=${semesterRange[1]}`;
+
   const getStudents = () => {
     axios
       .get(getStudentsUrl)
@@ -45,7 +44,7 @@ export default function Table() {
         .patch(updateTeacherUrl, { "new_teacher_id": newTeacher })
         .then(response => {
           console.log(response.data);
-          getStudents();
+          getRangedSemesterGPA();
         })
         .catch((error) => {
           console.error("There was an error fetching students data", error);
@@ -54,6 +53,48 @@ export default function Table() {
       console.log("unable to update teacher." + checkboxSelection + " " + newTeacher);
     }
   }
+
+  const getRangedSemesterGPA = () => {
+    axios
+      .get(getRangedGradesUrl)
+      .then(response => {
+        setStudentsData(response.data);
+      })
+      .catch((error) => {
+        console.error("There was an error fetching ranged semester data", error)
+      });
+  }
+  const handleSliderChange = (event, value) => {
+    setSemesterRange(value);
+  }
+  const sliderMarks = [
+    {
+      value: 1,
+      label: 1
+    },
+    {
+      value: 2,
+      label: 2
+    }, {
+      value: 3,
+      label: 3
+    }, {
+      value: 4,
+      label: 4
+    }, {
+      value: 5,
+      label: 5
+    }, {
+      value: 6,
+      label: 6
+    }, {
+      value: 7,
+      label: 7
+    }, {
+      value: 8,
+      label: 8
+    }
+  ]
   useEffect(() => {
     getStudents();
     getTeachers();
@@ -76,6 +117,20 @@ export default function Table() {
   return (
     <>
       <Paper style={{ margin: "70px 70px 20px 70px" }}>
+        <div style={{ display: "flex", flexDirection: "row", margin: "2% 5%", alignItems: "center" }}>
+          <h4>Semester Range:</h4>
+          <Slider
+            min={1}
+            max={8}
+            step={1}
+            marks={sliderMarks}
+            value={semesterRange}
+            onChange={handleSliderChange}
+            onChangeCommitted={getRangedSemesterGPA}
+            disableSwap
+          ></Slider>
+        </div>
+
         <DataGrid
           getRowId={(row) => row.student_id}
           rows={studentsData}
