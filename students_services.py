@@ -1,19 +1,34 @@
 from teachers_service import get_teacher
 
 
-def get_students(cur) -> list[dict[str, str | int]]:
+def get_students(cur, earliest_semester : int | None, latest_semester : int | None) -> list[dict[str, str | int]] | dict[str, str]:
+    if earliest_semester is None:
+        earliest_semester = 1
+    else: 
+        earliest_semester = int(earliest_semester)
+    if latest_semester is None:
+        latest_semester = 8
+    else:
+        latest_semester = int(latest_semester)
+
+    if latest_semester > 8 or latest_semester < 1 or earliest_semester < 1 or earliest_semester > 8:
+        return {"error" : "Earliest and latest semester must have a value between 1 and 8 inclusive."}
+    if latest_semester < earliest_semester:
+        return {"error": "Earliest semester must have a lower value than latest semester."}
+    
     sql_str = """
             SELECT 
                 students.id as student_id,
                 students.name as student,
                 teachers.name as teacher,
-                ROUND(COALESCE(AVG(grades.grade), 0), 3) as cumulative_grade
+                ROUND(COALESCE(AVG(grades.grade), 0), 2) as cumulative_grade
             FROM students
             LEFT JOIN teachers ON students.teacher_id = teachers.id
             LEFT JOIN grades ON students.id = grades.student_id
+            WHERE grades.semester >= %s AND grades.semester <= %s
             GROUP BY students.id, teachers.name;
         """
-    cur.execute(sql_str)
+    cur.execute(sql_str, (earliest_semester, latest_semester))
     students = cur.fetchall()
     formatted_students_response = sorted(
         [

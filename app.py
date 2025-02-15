@@ -65,6 +65,22 @@ def update_teacher_of_student(student_id: int):
             connection_pool.putconn(conn)
 
 
+@app.route("/students-grades", methods=["GET"])
+def get_all_student_grades() -> tuple[Any, Literal[200]] | tuple[Any, Literal[400]]:
+    earliest_semester = request.args.get("earliest_semester")
+    latest_semester = request.args.get("latest_semester")
+    try:
+        conn = connection_pool.getconn()
+        cur = conn.cursor()
+        res = get_students(cur, earliest_semester=earliest_semester, latest_semester=latest_semester)
+        return jsonify(res), 200
+    except Exception as e:
+        print(f"Error: {e}")
+        return jsonify({"error": "Unable to retrieve students' grades."}), 500
+    finally:
+        if conn:
+            connection_pool.putconn(conn)
+
 def on_app_close() -> None:
     global connection_pool
     if connection_pool:
