@@ -39,7 +39,7 @@ export default function Table() {
   }
 
   const updateTeacher = () => {
-    if (checkboxSelection != undefined && newTeacher) {
+    if (checkboxSelection !== undefined && newTeacher) {
       axios
         .patch(updateTeacherUrl, { "new_teacher_id": newTeacher })
         .then(response => {
@@ -98,10 +98,10 @@ export default function Table() {
   useEffect(() => {
     getStudents();
     getTeachers();
-  }, [])
+  })
 
   useEffect(() => {
-    if (checkboxSelection == undefined) {
+    if (checkboxSelection === undefined) {
       setNewTeacher(false);
     }
   }, [checkboxSelection])
@@ -144,8 +144,8 @@ export default function Table() {
       </Paper>
       <div style={{ margin: "20px" }}>
         <div>
-          <h4>Currently Selected Student: {studentsData.length > 0 && checkboxSelection != undefined ? studentsData[checkboxSelection - 1]["student_name"] : "-"}</h4>
-          <h4>Currently Assigned Teacher: {checkboxSelection != undefined ? studentsData[checkboxSelection - 1]["teacher_name"] : "-"}</h4>
+          <h4>Currently Selected Student: {studentsData.length > 0 && checkboxSelection !== undefined ? studentsData[checkboxSelection - 1]["student_name"] : "-"}</h4>
+          <h4>Currently Assigned Teacher: {checkboxSelection !== undefined ? studentsData[checkboxSelection - 1]["teacher_name"] : "-"}</h4>
         </div>
         <div style={{ display: "flex", flexDirection: "row", justifyContent: "center", marginTop: "50px" }}>
           <h4 style={{ alignContent: "center" }}>Assign New Teacher:</h4>
