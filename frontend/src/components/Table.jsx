@@ -130,7 +130,7 @@ export default function Table() {
             disableSwap
           ></Slider>
         </div>
-        {studentsData < 1 && <h3>Loading Student Data...</h3>} 
+        {studentsData.length < 1 && <h3>Loading Student Data...</h3>}
         <DataGrid
           getRowId={(row) => row.student_id}
           rows={studentsData}
@@ -139,12 +139,13 @@ export default function Table() {
           pageSizeOptions={[10, 5]}
           checkboxSelection
           disableMultipleRowSelection
+          onRowSelectionModelChange={(e) => { setCheckBoxSelection(e[0]) }}
           loading={studentsData.length < 1}
           slotProps={{
             loadingOverlay: {
               variant: 'linear-progress',
               noRowsVariant: 'linear-progress',
-            },
+            }
           }}
         />
       </Paper>
