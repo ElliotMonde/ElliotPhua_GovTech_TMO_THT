@@ -98,7 +98,7 @@ export default function Table() {
   useEffect(() => {
     getStudents();
     getTeachers();
-  })
+  }, [])
 
   useEffect(() => {
     if (checkboxSelection === undefined) {
